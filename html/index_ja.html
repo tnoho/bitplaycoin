@@ -1,0 +1,191 @@
+<!doctype html>
+<html>
+    <head>
+        <title>DataChannel BlockChain</title>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <meta name="robots" content="noindex,nofollow">
+        <link rel="stylesheet" type="text/css" href="./css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="./css/ui.css">
+    </head>
+    <body>
+        <div class="container">
+            <a href="https://github.com/tnoho/bitplaycoin"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"></a>
+            <div class="row">
+                <div class="col-md-12"><h1>DataChannel BitPlayCoin</h1></div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <a tabindex="0" class="btn btn-default btn-lg has-popover" role="button"
+                        id="a-id" title="自分自身のID" data-placement="bottom"
+                        data-content="取引は全てIDを用いて行うため口座番号に相当します。IDはPublicKeyを元にハッシュ化を行うことで生成します。"></a>
+                    <a tabindex="0" class="btn btn-default btn-lg has-popover" role="button"
+                        id="a-balance" title="取引可能残高" data-placement="bottom"
+                        data-content="自分が現在取り扱えるビットコインの総額を、自分が持っているPublicKeyを横断して表示しています。">
+                        残高: <span id="span-balance"></span></a>
+                </div>
+            </div>
+            <div class="row spacer">
+                <div class="col-md-12">
+                    <div class="panel panel-primary">
+                        <div class="panel-body">
+                            <form id='form-send' class="form-inline">
+                                <div class="form-group">
+                                    <label for="button-sendto">送金先</label>
+                                    <span class="dropdown">
+                                        <button type="button" class="btn btn-default dropdown-toggle" id="button-sendto" 
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                None <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" id="dropdown-menu-sendto">
+                                        </ul>
+                                        <input type="hidden" name="dropdown-value" id="input-sendto" value="none">
+                                    </span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="input-value">金額</label>
+                                    <div class="input-group">
+                                        <div class="input-group-addon">$</div>
+                                        <input type="number" class="form-control" id="input-value" value="0.0001" step="0.0001">
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary" id="button-send" type="submit">
+                                    <span class="glyphicon glyphicon-send" aria-hidden="true"></span> Send
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <ul class="nav nav-tabs spacer" role="tablist">
+                <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Home</a></li>
+                <li role="presentation"><a href="#raw" aria-controls="raw" role="tab" data-toggle="tab">RAW</a></li>
+            </ul>
+            
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane active" id="home">
+                    
+                    <div class="row spacer narrow-padding-outer">
+                        <div class="col-md-9 narrow-padding">
+                            <div class="panel panel-danger">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">BlockChain</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <ul class="horizontal-slide" id="ul-block">
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 narrow-padding">
+                            <div class="panel panel-warning">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">
+                                        Miner
+                                        <a tabindex="0" class="has-popover" role="button"
+                                        id="a-yeah" title="Yeah!" data-placement="top"
+                                        data-content="I got reward for found nance!"></a>
+                                    </h3>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="panel panel-warning">
+                                        <div class="panel-heading block-panel-heading clickable has-popover"
+                                            type="button" id="mining-block-header">
+                                            <a tabindex="0" role="button"
+                                                class="ellipsis has-popover" title="ブロックのハッシュ値" data-placement="bottom"
+                                                data-content="下記のデータを含めた、このBlockのハッシュ値です。含まれるデータが変わるたび値が変わります。">
+                                                <h5 class="panel-title ellipsis" id="mining-block-title">...</h5>
+                                            </a>
+                                        </div>
+                                        <div class="panel-body block-panel-body" id="mining-block-body">
+                                            <div class="btn-group-vertical full-width" role="group">
+                                                <a tabindex="0" type="button" 
+                                                    class="btn btn-default btn-xs ellipsis has-popover"
+                                                    id="mining-block-prev" title="prev_block" data-placement="bottom"
+                                                    data-content="一つ前のブロックから生成されたハッシュ値が入っています。">...</a>
+                                                <a tabindex="0" type="button"
+                                                    class="btn btn-default btn-xs ellipsis has-popover"
+                                                    id="mining-block-merkle" title="merkle_root" data-placement="bottom"
+                                                    data-content="Blockに含まれるすべての取引からツリー状に合算したハッシュ値が入っています。Transactionが追加されるたび、値が変わります。"></a>
+                                                <a tabindex="0" type="button"
+                                                    class="btn btn-default btn-xs ellipsis has-popover"
+                                                    id="mining-block-time" title="timestamp" data-placement="bottom"
+                                                    data-content="ブロックが生成された時間が入っています。"></a>
+                                                <a tabindex="0" type="button"
+                                                    class="btn btn-default btn-xs ellipsis has-popover"
+                                                    id="mining-block-nonce" title="nonce" data-placement="bottom"
+                                                    data-content="このブロックのハッシュ値が先頭 00 になるよう加算しています。"></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row spacer narrow-padding-outer">
+                        <div class="col-md-12 narrow-padding">
+                            <div class="panel panel-success">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title" id="h3-tx">Transaction</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="list-group" id="div-txlist">
+                                        <a href="#" class="list-group-item">Blockのタイトルをクリックすると、ここに取引が表示されます。</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+               
+                </div>
+                
+                <div role="tabpanel" class="tab-pane" id="raw">
+                    <div class="row spacer">
+                        <div class="col-md-12">
+                            <div class="panel panel-default">
+                                <div class="panel-body" id="div-history">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal fade" id="modal-transaction" tabindex="-1" role="dialog" aria-labelledby="modalTransaction">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="modal-tx-title">Transaction</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                            <div class="col-md-6">
+                                <h4>TX In</h4>
+                                <div id="div-txin">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h4>Tx Out</h4>
+                                <div id="div-txout">
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="./js/jquery.min.js"></script>
+        <script src="./js/bootstrap.min.js"></script>
+        <script src="./js/socket.io.js"></script>
+        <script src="./js/jsrsasign-latest-all-min.js"></script>
+        <script src="./js/sha256.js"></script>
+        <script src="./js/base58.js"></script>
+        <script src="./js/ripemd160.js"></script>
+        <script src="./js/peer.js"></script>
+        <script src="./js/chain.js"></script>
+        <script src="./js/ui_ja.js"></script>
+    </body>
+</html>
